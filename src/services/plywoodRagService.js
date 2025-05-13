@@ -645,6 +645,84 @@ function levenshteinDistance(a, b) {
   return matrix[b.length][a.length];
 }
 
+// Function to calculate adjusted market price for plywood items
+const calculateAdjustedMarketPrice = (product) => {
+  console.log('------- Market Price Calculation -------');
+  console.log('Product:', product.name);
+  console.log('Original market price:', product.market_price);
+  
+  // Check if the product name contains 'plywood' (case insensitive)
+  if (product.name && product.name.toLowerCase().includes('plywood')) {
+    console.log('Product is plywood, calculating adjusted price...');
+    try {
+      // Extract size dimensions
+      const size = product.size;
+      console.log('Size:', size);
+      
+      if (!size) {
+        console.log('No size data available, returning original price');
+        return product.market_price; // Return original price if size is not available
+      }
+      
+      // Parse size - expecting format like '8x4' or similar
+      const dimensions = size.split('x');
+      console.log('Dimensions array:', dimensions);
+      
+      if (dimensions.length !== 2) {
+        console.log('Invalid dimension format, returning original price');
+        return product.market_price; // Return original if format isn't as expected
+      }
+      
+      // Parse dimensions as numbers
+      const length = parseFloat(dimensions[0]);
+      const width = parseFloat(dimensions[1]);
+      console.log('Length:', length, 'Width:', width);
+      
+      if (isNaN(length) || isNaN(width)) {
+        console.log('Invalid dimension values, returning original price');
+        return product.market_price; // Return original if parsing fails
+      }
+      
+      // Calculate area
+      const area = length * width;
+      console.log('Calculated area:', area, 'square units');
+      
+      // Calculate adjusted price (market price per unit × area)
+      const marketPriceStr = product.market_price.toString();
+      const marketPrice = parseFloat(marketPriceStr.replace(/[^0-9.]/g, ''));
+      console.log('Parsed market price value:', marketPrice);
+      
+      if (isNaN(marketPrice)) {
+        console.log('Could not parse market price, returning original price');
+        return product.market_price; // Return original if price parsing fails
+      }
+      
+      const adjustedPrice = marketPrice * area;
+      console.log('Calculation: ', marketPrice, '×', area, '=', adjustedPrice);
+      
+      // Format the adjusted price similar to the original price format
+      let formattedPrice;
+      if (marketPriceStr.includes('₹')) {
+        formattedPrice = `₹${adjustedPrice.toFixed(2)}`;
+      } else {
+        formattedPrice = `${adjustedPrice.toFixed(2)}`;
+      }
+      console.log('Final adjusted price:', formattedPrice);
+      console.log('------- End of Calculation -------');
+      return formattedPrice;
+    } catch (error) {
+      console.error('Error calculating adjusted market price:', error);
+      console.log('Returning original price due to error');
+      return product.market_price; // Return original price in case of any error
+    }
+  }
+  
+  // Return original market price for non-plywood items
+  console.log('Not a plywood product, returning original price');
+  console.log('------- End of Calculation -------');
+  return product.market_price;
+};
+
 // Function to directly search products using OpenAI
 const searchWithOpenAI = async (query, plywoodData) => {
   try {
@@ -720,6 +798,14 @@ RESPOND ONLY WITH THE JSON - NO OTHER TEXT BEFORE OR AFTER.
       if (jsonMatch) {
         const searchResults = JSON.parse(jsonMatch[0]);
         console.log(`OpenAI found ${searchResults.products.length} matching products`);
+        // Apply the adjusted market price calculation for plywood products
+        searchResults.products = searchResults.products.map(product => {
+          return {
+            ...product,
+            market_price: calculateAdjustedMarketPrice(product)
+          };
+        });
+        
         return searchResults;
       } else {
         throw new Error('No valid JSON found in OpenAI response');
@@ -739,7 +825,11 @@ RESPOND ONLY WITH THE JSON - NO OTHER TEXT BEFORE OR AFTER.
           type: product.Type || '',
           size: product.Size || '',
           selling_price: `${product.SellingPrice || ''} ${product.SPUnit || ''}`,
-          market_price: `${product.MarketPrice || ''} ${product.MPUnit || ''}`
+          market_price: calculateAdjustedMarketPrice({
+            name: product.Name || '',
+            size: product.Size || '',
+            market_price: `${product.MarketPrice || ''} ${product.MPUnit || ''}`
+          })
         }))
       };
     }
@@ -843,7 +933,11 @@ Sort the products by most relevant to the user's query first.
           type: product.Type,
           size: product.Size,
           selling_price: `${product.SellingPrice} ${product.SPUnit}`,
-          market_price: `${product.MarketPrice} ${product.MPUnit}`
+          market_price: calculateAdjustedMarketPrice({
+            name: product.Name,
+            size: product.Size,
+            market_price: `${product.MarketPrice} ${product.MPUnit}`
+          })
         }))
       };
     }
@@ -866,7 +960,11 @@ Sort the products by most relevant to the user's query first.
         type: product.Type,
         size: product.Size,
         selling_price: `${product.SellingPrice} ${product.SPUnit}`,
-        market_price: `${product.MarketPrice} ${product.MPUnit}`
+        market_price: calculateAdjustedMarketPrice({
+          name: product.Name,
+          size: product.Size,
+          market_price: `${product.MarketPrice} ${product.MPUnit}`
+        })
       }))
     };
   }
