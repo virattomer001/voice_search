@@ -1,0 +1,11 @@
+id,name,price_category,attributes,description
+1,Smartphone X1,Premium,"color: black, ram: 8GB, storage: 128GB","A high-end smartphone with excellent camera quality, fast processor, and long battery life."
+2,Budget Phone B2,Budget,"color: blue, ram: 4GB, storage: 64GB","Affordable smartphone with good performance for everyday tasks and decent battery life."
+3,Laptop Pro L7,Premium,"color: silver, ram: 16GB, storage: 512GB SSD","Professional laptop for developers and designers with stunning display and powerful performance."
+4,Tablet T3,Mid-range,"color: gray, ram: 6GB, storage: 128GB","Versatile tablet for entertainment and productivity with sharp display and good battery life."
+5,Wireless Earbuds E5,Budget,"color: white, battery: 6 hours","Comfortable earbuds with clear sound quality and compact charging case."
+6,Smart Watch S2,Mid-range,"color: black, battery: 2 days","Fitness tracking watch with heart rate monitor and sleep tracking features."
+7,Power Bank P1,Budget,"capacity: 10000mAh, ports: 2 USB","Compact power bank for charging your devices on the go with fast charging capability."
+8,Bluetooth Speaker B10,Mid-range,"color: red, battery: 12 hours","Portable speaker with rich bass and water-resistant design for outdoor use."
+9,Gaming Console G1,Premium,"color: black, storage: 1TB","Next-generation gaming console with stunning graphics and extensive game library."
+10,Digital Camera D7,Premium,"color: black, resolution: 24MP","Professional-grade camera with exceptional image quality and advanced features." 
